@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import Rem from './rem.js'
 import ElementUI from 'element-ui'
-import 'element-ui/lib/element-#f05454/index.css'
+import '../theme/index.css'
 import App from './App'
 import router from './router'
 import Vuex from 'vuex'
