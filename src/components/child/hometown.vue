@@ -24,7 +24,8 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import { Message } from 'element-ui';
 
 export default {
   data() {
@@ -49,11 +50,9 @@ export default {
           label: '广州'
         }],
         theValue: this.value,
-        info:{
-          area: this.varea,
-          home: this.vhome,
-          email: this.vmail,
-          wechat: this.vwechat,
+        info: {
+          types: '',
+          value: ''
         },
       }
     },
@@ -62,75 +61,26 @@ export default {
     'value',
     'placeholder',
     'label',
-    'varea',
-    'vhome',
-    'vmail',
-    'vwechat',
   ],
 
   watch: {
     value(val) {
       this.theValue = val
     },
-    varea(val){
-      this.info.area = val
-    },
-    vhome(val){
-      this.info.home = val
-    },
-    vmail(val){
-      this.info.email = val
-    },
-    vwechat(val){
-      this.info.wechat = val
-    },
   },
   methods: {
     sethome(){
-      const the = this;
-      if (this.theType === "area") {
-        this.info.area = this.theValue;
-        axios({
-            method: 'patch',
-            url: '/user/'+ localStorage.uid,
-            data: this.info,
-            transformRequest: [function (data) {
-              var ret = JSON.stringify(data);
-              return ret
-            }],
-            headers:{"Content-Type": "application/json",
-            token: the.$store.state.user.token,
-          },
-        })
-        .then(function(res){
-          console.log(res);
-        })
-        .catch(function(err){
-          console.log(err);
-        });
-      }else if (this.theType === "home") {
-        this.info.home = this.theValue;
-        axios({
-            method: 'patch',
-            url: '/user/'+ localStorage.uid,
-            data: this.info,
-            transformRequest: [function (data) {
-              var ret = JSON.stringify(data);
-              return ret
-            }],
-            headers:{"Content-Type": "application/json",
-            token: the.$store.state.user.token,
-          },
-        })
-        .then(function(res){
-          console.log(res);
-        })
-        .catch(function(err){
-          console.log(err);
-        });
-      }
+      this.info.types = this.theType,
+      this.info.value = this.theValue,
+      this.$store.dispatch('getinfo',this.info)
+      .then(()=>{
+        this.$store.dispatch('updateinfo')
+      })
     },
   },
+  components:{
+        Message,
+  }
 }
 </script>
 

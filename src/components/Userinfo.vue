@@ -17,20 +17,20 @@
       <div id="userads">
         <div class="area">
           <img src="../assets/userinfo/area.png">
-          <div v-if="area!=null">
-            <span>{{area}}</span>
+          <div v-if="area===null||area===''">
+            <span>所在地</span>
           </div>
           <div v-else>
-            <span>所在地</span>
+            <span>{{area}}</span>
           </div>
         </div>
         <div class="home">
           <img src="../assets/userinfo/home.png">
-          <div v-if="home!=null">
-            <span>{{home}}</span>
+          <div v-if="home===null||area===''">
+            <span>家乡</span>
           </div>
           <div v-else>
-            <span>家乡</span>
+            <span>{{home}}</span>
           </div>
         </div>
       </div>
@@ -52,20 +52,20 @@
         <div class="details">
           <div class="item">
             <span>邮箱</span>
-            <div v-if="mail!=null">
-              {{mail}}
+            <div v-if="mail===null||mail===''">
+              未填写
             </div>
             <div v-else>
-              未填写
+              {{mail}}
             </div>
           </div>
           <div class="item">
             <span>微信</span>
-            <div v-if="wechat!=null">
-              {{wechat}}
+            <div v-if="wechat===null||wechat===''">
+              未填写
             </div>
             <div v-else>
-              未填写
+              {{wechat}}
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@
       <div
         v-if="getworks"
         id="works">
-        <p>个人作品</p>
+        <p>作品链接</p>
         <div class="details">
           <div
           v-for="work in works"
@@ -90,11 +90,11 @@
         <p>在校经历</p>
         <div class="details">
           <div
-            v-for="schex in schexs"
+            v-for="schex in school_experience"
             :key="schex.id"
             class="item">
             <span>
-              {{schex.startime}}-{{schex.endtime}}
+              {{schex.starttime}}-{{schex.endtime}}
             </span>
             <div>
               {{schex.content}}
@@ -108,14 +108,14 @@
         <p>获奖经历</p>
         <div class="details">
           <div
-            v-for="award in awards"
-            :key="award.id"
+            v-for="awd in award"
+            :key="awd.id"
             class="item">
             <span>
-              {{award.time}}
+              {{awd.time}}
             </span>
             <div>
-              {{award.content}}
+              {{awd.content}}
             </div>
           </div>
         </div>
@@ -126,11 +126,11 @@
         <p>工作经历</p>
         <div class="details">
           <div
-            v-for="wkex in wkexs"
+            v-for="wkex in work_experience"
             :key="wkex.id"
             class="item">
             <span>
-              {{wkex.startime}}-{{wkex.endtime}}
+              {{wkex.starttime}}-{{wkex.endtime}}
             </span>
             <div>
               {{wkex.content}}
@@ -153,20 +153,7 @@ import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
-      uid:'',
-      schoolexperience: false,
-      schexs:[
-        {startime:'123',endtime:'4134',content:'12414124'},
-        {startime:'123',endtime:'4134',content:'12414124'},
-      ],
-      getaward: false,
-      awards:[
-        {time:'',content:''},
-      ],
-      workexperience: false,
-      wkexs:[
-        {startime:'',endtime:'',content:''},
-      ],
+      uid:''
     }
   },
   mounted() {
@@ -187,6 +174,13 @@ export default {
       'isFemale',
       'getworks',
       'works',
+      'schoolexperience',
+      'school_experience',
+      'workexperience',
+      'work_experience',
+      'getaward',
+      'award'
+
     ])
   },
   watch:{
@@ -220,6 +214,7 @@ header
   width: 100%
   height: pxTorem(240)
   background: no-repeat center/100% url('../assets/userinfo/Userbg.png')
+  box-shadow: inset 0 pxTorem(-1) pxTorem(8) rgba(0, 0, 0, 0.1)
 
 #edit
   position: relative

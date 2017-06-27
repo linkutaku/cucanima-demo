@@ -32,20 +32,12 @@
       <hometown
         theType="area"
         :value="area"
-        :vhome="home"
-        :varea="area"
-        :vmail="mail"
-        :vwechat="wechat"
         placeholder="选择当前地址"
         label="所在地">
       </hometown>
       <hometown
         theType="home"
         :value="home"
-        :vhome="home"
-        :varea="area"
-        :vmail="mail"
-        :vwechat="wechat"
         placeholder="选择家乡"
         label="家乡">
       </hometown>
@@ -53,10 +45,6 @@
       <contact
         theType="mail"
         :cont="mail"
-        :vhome="home"
-        :varea="area"
-        :vmail="mail"
-        :vwechat="wechat"
         placeholder="请输入您的常用邮箱"
         title="邮箱"
         :length="32">
@@ -64,10 +52,6 @@
       <contact
         theType="wechat"
         :cont="wechat"
-        :vhome="home"
-        :varea="area"
-        :vmail="mail"
-        :vwechat="wechat"
         placeholder="请输入您的微信号"
         title="微信"
         :length="32">
@@ -76,17 +60,20 @@
     <div class="line"></div>
     <main>
       <div id="contact">
-        <p>个人作品</p>
+        <p>作品链接</p>
         <div class="addcontact">
           <ul>
-            <li
-              is="works"
-              class="view"
-              v-for="(work,index) in works"
-              v-on:remove="works.splice(index, 1)"
-              :id="work.id"
-              :link="work.link">
-            </li>
+            <transition-group name="list">
+              <li
+                is="works"
+                class="view"
+                v-for="(work,index) in works"
+                :key="work"
+                v-on:remove="works.splice(index, 1)"
+                :id="work.id"
+                :link="work.link">
+              </li>
+              </transition-group>
           </ul>
         </div>
         <div class="addtext">
@@ -104,16 +91,20 @@
         <p class="sp">在校经历</p>
         <div class="a1ddcontact">
           <ul>
+            <transition-group name="list">
             <li
               is="exp"
               theLabel="经历描述"
+              theType="school"
               v-for="(schexp, index) in school_experience"
+              :key="schexp"
               v-on:remove="school_experience.splice(index, 1)"
               :id="schexp.id"
-              :startime="schexp.startime"
+              :starttime="schexp.starttime"
               :endtime="schexp.endtime"
               :content="schexp.content">
             </li>
+            </transition-group>
           </ul>
         </div>
         <div class="addtext">
@@ -131,14 +122,17 @@
         <p class="sp">获奖经历</p>
         <div class="addcontact">
           <ul>
+            <transition-group name="list">
             <li
               is="awards"
               v-for="(awd, index) in award"
+              :key="awd"
               v-on:remove="award.splice(index, 1)"
               :id="awd.id"
               :time="awd.time"
               :content="awd.content">
             </li>
+            </transition-group>
           </ul>
         </div>
         <div class="addtext">
@@ -156,16 +150,20 @@
         <p class="sp">工作经历</p>
         <div class="addcontact">
           <ul>
+            <transition-group name="list">
             <li
               is="exp"
               theLabel="公司及岗位"
+              theType="work"
               v-for="(workexp, index) in work_experience"
+              :key="workexp"
               v-on:remove="work_experience.splice(index, 1)"
               :id="workexp.id"
-              :startime="workexp.startime"
+              :starttime="workexp.starttime"
               :endtime="workexp.endtime"
               :content="workexp.content">
             </li>
+            </transition-group>
           </ul>
         </div>
         <div class="addtext">
@@ -195,15 +193,6 @@ import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
-      school_experience:[
-        {id:'',startime:'',endtime:'',content:''},
-      ],
-      award:[
-        {id:'',time:'',content:''},
-      ],
-      work_experience:[
-        {id:'',startime:'',endtime:'',content:''},
-      ],
     }
   },
   mounted() {
@@ -221,6 +210,9 @@ export default {
       'mail',
       'wechat',
       'works',
+      'school_experience',
+      'work_experience',
+      'award'
     ])
   },
   watch:{
@@ -250,7 +242,7 @@ export default {
       if (this.school_experience.length <= 9) {
         this.school_experience.push({
           id:'',
-          startime:'',
+          starttime:'',
           endtime:'',
           content:''
         })
@@ -263,7 +255,7 @@ export default {
       if (this.work_experience.length <= 9) {
         this.work_experience.push({
           id:'',
-          startime:'',
+          starttime:'',
           endtime:'',
           content:''
         })
@@ -283,7 +275,7 @@ export default {
       else {
         Message.info("不能再添加");
       }
-    }
+    },
   },
   components:{
         Message,
@@ -296,6 +288,58 @@ export default {
 }
 </script>
 
+<style lang="sass">
+@function pxTorem($px)
+  @return $px/37.5 * 1rem
+
+.el-form-item__label
+  width: 100%
+  font-size: pxTorem(16)
+  padding-bottom: 0 !important
+
+.el-form-item__content
+  line-height: pxTorem(42)
+  font-size: pxTorem(16)
+  div
+    margin-bottom: 0
+  .el-input__inner
+    border-radius: pxTorem(2)
+    height: pxTorem(42)
+    padding: pxTorem(3) pxTorem(10)
+
+.el-input__inner
+  border-radius: pxTorem(2)
+  height: pxTorem(42)
+  padding: pxTorem(3) pxTorem(10)
+
+.el-input
+  font-size: pxTorem(16)
+
+.el-input__icon
+  width: pxTorem(35)
+
+.el-message-box
+  width: pxTorem(250)
+
+.el-message-box__title
+  float: left
+
+.el-message-box__close
+  float: right
+
+.el-message-box__content
+  margin-top: pxTorem(20)
+
+.el-message
+  min-width: pxTorem(300)
+  top: pxTorem(20)
+
+.el-input__inner
+  border-radius: pxTorem(2)
+  height: pxTorem(42)
+  padding: pxTorem(3) pxTorem(10)
+</style>
+
 <style scoped lang="sass">
 @function pxTorem($px)
   @return $px/37.5 * 1rem
@@ -307,6 +351,7 @@ header
   width: 100%
   height: pxTorem(138)
   background: no-repeat center/100% url('../assets/userinfo/Userbg.png')
+  box-shadow: inset 0 pxTorem(-1) pxTorem(8) rgba(0, 0, 0, 0.1)
 
 #avatar
   position: relative
@@ -426,4 +471,10 @@ main p
 .datapicker
   width: pxTorem(50)
 
+.list-enter-active, .list-leave-active
+    transition: all 0.5s
+
+.list-enter, .list-leave-active
+    opacity: 0
+    transform: translateY(pxTorem(-30))
 </style>

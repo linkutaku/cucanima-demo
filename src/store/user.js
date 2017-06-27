@@ -4,7 +4,8 @@ export const GETTOKEN = 'gettoken';
 export const LOGOUT = 'logout';
 export const SETPASS = 'setpass';
 export const BASEINFO = 'baseinfo';
-
+export const UPDATEINFO = 'updateinfo';
+export const GETINFO = 'getinfo';
 
 const state = {
     user:{
@@ -25,18 +26,19 @@ const state = {
     wechat: '',
     token: '',
     getworks: false,
-    works:[
-      {id:'',link:''},
-    ],
-    school_experience:[
-      {id:'',startime:'',endtime:'',content:''},
-    ],
-    award:[
-      {id:'',time:'',content:''},
-    ],
-    work_experience:[
-      {id:'',startime:'',endtime:'',content:''},
-    ],
+    works:[],
+    schoolexperience: false,
+    school_experience:[],
+    getaward: false,
+    award:[],
+    workexperience: false,
+    work_experience:[],
+    info: {
+      area: '',
+      home: '',
+      email: '',
+      wechat: ''
+    },
 };
 
 const mutations = {
@@ -54,7 +56,7 @@ const mutations = {
       state.user.password = newpass;
     },
 
-    BASEINFO(state){
+    BASEINFO(){
       axios({
          method: 'get',
          url: '/user/'+ localStorage.uid,
@@ -73,14 +75,55 @@ const mutations = {
         state.home = res.data.home,
         state.mail = res.data.email,
         state.wechat = res.data.wechat,
-        state.works = res.data.works,
+        state.works = res.data.works;
         state.school_experience = res.data.school_experience,
-        state.award = res.data.work_experience;
+        state.award = res.data.award,
+        state.work_experience = res.data.work_experience;
       })
       .catch(function (error) {
         if (TypeError) {
           console.log("服务器请求超时");
         }
+      });
+    },
+
+    GETINFO(state,data){
+      if (data.types === "area") {
+        state.area = data.value
+      }
+      else if (data.types === "home") {
+        state.home = data.value
+      }
+      else if (data.types === "mail") {
+        state.mail = data.value
+      }
+      else if (data.types === "wechat") {
+        state.wechat = data.value
+      }
+    },
+
+    UPDATEINFO(){
+      state.info.area = state.area,
+      state.info.home = state.home,
+      state.info.email = state.mail,
+      state.info.wechat = state.wechat,
+      axios({
+          method: 'patch',
+          url: '/user/'+ localStorage.uid,
+          data: state.info,
+          transformRequest: [function (data) {
+            var ret = JSON.stringify(data);
+            return ret
+          }],
+          headers:{"Content-Type": "application/json",
+          token: localStorage.token,
+        },
+      })
+      .then(function(res){
+        console.log(res);
+      })
+      .catch(function(err){
+        console.log(err);
       });
     }
 }
@@ -96,7 +139,7 @@ const getters = {
       return state.gender
     },
     isMale: state =>{
-      if (state.gander=='male') {
+      if (state.gander === 'male') {
         state.isMale = true
         return state.isMale
       }else {
@@ -105,7 +148,7 @@ const getters = {
       }
     },
     isFemale: state =>{
-      if (state.gander=='female') {
+      if (state.gander === 'female') {
         state.isFemale = true
         return state.isFemale
       }else {
@@ -132,7 +175,7 @@ const getters = {
       return state.wechat
     },
     getworks: state => {
-      if (state.works[0]!=undefined) {
+      if (state.works[0] != undefined) {
         state.getworks = true
         return state.getworks
       }else {
@@ -142,6 +185,42 @@ const getters = {
     },
     works: state => {
       return state.works
+    },
+    schoolexperience: state => {
+      if (state.school_experience[0] != undefined) {
+        state.schoolexperience = true
+        return state.schoolexperience
+      }else {
+        state.schoolexperience = false
+        return state.schoolexperience
+      }
+    },
+    school_experience: state => {
+      return state.school_experience
+    },
+    workexperience: state => {
+      if (state.work_experience[0] != undefined) {
+        state.workexperience = true
+        return state.workexperience
+      }else {
+        state.workexperience = false
+        return state.workexperience
+      }
+    },
+    work_experience: state => {
+      return state.work_experience
+    },
+    getaward: state => {
+      if (state.award[0] != undefined) {
+        state.getaward = true
+        return state.getaward
+      }else {
+        state.getaward = false
+        return state.getaward
+      }
+    },
+    award: state => {
+      return state.award
     }
 
   }
@@ -162,6 +241,14 @@ const actions = {
   baseinfo ({commit}){
     commit('BASEINFO')
   },
+
+  getinfo ({commit},info){
+    commit('GETINFO',info)
+  },
+
+  updateinfo ({commit}){
+    commit('UPDATEINFO')
+  }
 };
 
 export default {

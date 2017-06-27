@@ -12,7 +12,7 @@
         type="month"
         format="yyyy.MM"
         placeholder="开始"
-        v-model="form.startime"
+        v-model="form.starttime"
         style="width: 100%;"
         @change="ruleDate">
       </el-date-picker>
@@ -33,7 +33,8 @@
     :label="theLabel">
     <el-input
       :maxlength="14"
-      v-model="form.content">
+      v-model="form.content"
+      @blur="setExp">
     </el-input>
   </el-form-item>
 </el-form>
@@ -45,6 +46,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { Message } from 'element-ui';
 
 export default {
@@ -52,28 +54,71 @@ export default {
     return {
       form: {
         id: this.id,
-        startime: this.startime,
+        starttime: this.starttime,
         endtime: this.endtime,
         content:this.content,
-      }
+      },
+      d: {
+        starttime: '',
+        endtime: '',
+        content: ''
+      },
+      i: {
+        id: ''
+      },
     }
   },
   watch: {
+    id(val) {
+      this.form.id = val
+    },
+    starttime(val) {
+      this.form.starttime = val
+    },
+    endtime(val) {
+      this.form.endtime = val
+    },
+    content(val) {
+      this.form.content = val
+    },
+
   },
   props:[
     'theLabel',
+    'theType',
     'id',
-    'startime',
+    'starttime',
     'endtime',
     'content'
   ],
   methods: {
     ruleDate(){
-      if (this.form.startime>=this.form.endtime&&this.form.endtime!='') {
-        Message.info("请选择正确时间范围",0);
-        this.form.startime = this.form.endtime = ''
+      var st = Number(this.fixDate(this.form.starttime));
+      var et = Number(this.fixDate(this.form.endtime));
+      if (st >= et && this.form.endtime != '') {
+        Message.warning("请选择正确时间范围"),
+        this.form.starttime = this.form.endtime = ''
+        this.d.starttime = this.d.endtime = ''
+      }
+      if (st < et && this.form.endtime != '' && this.form.starttime != '') {
+        this.d.starttime = this.fixDate(this.form.starttime),
+        this.d.endtime = this.fixDate(this.form.endtime),
+        this.setExp();
       }
     },
+    setExp(){
+      if (this.form.content != '' && (this.form.starttime === '' || this.form.endtime === '')) {
+        Message.info("请选择时间范围")
+      }
+      else if (this.form.id === '' && this.form.content != '') {
+        this.d.content = this.form.content,
+        this.thePost(this.theType);
+      }
+      else if (this.form.id != '' && this.form.content != '') {
+        this.thePatch(this.theType);
+      }
+    },
+
     del(){
       if (this.form.content!='') {
         this.$confirm('是否删除内容?', '提示', {
@@ -81,17 +126,100 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
+          Message.success("删除成功!");
           this.$emit('remove')
+          this.theDel(this.theType)
         }).catch(() => {
         });
+      }
+      else if (this.form.id != '' && this.form.content === '') {
+        this.$emit('remove')
+        this.theDel(this.theType)
       }else {
         this.$emit('remove')
       }
-    }
+    },
+
+    thePost(type){
+      const the = this.$store
+      axios({
+          method: 'post',
+          url: '/user/' + localStorage.uid + '/' + type,
+          data: this.d,
+          transformRequest: [function (data) {
+            var ret = JSON.stringify(data);
+            return ret
+          }],
+          headers:{"Content-Type": "application/json",
+          token: this.$store.state.user.token,
+        },
+      })
+      .then(function(res){
+        the.dispatch('baseinfo'),
+        console.log(res);
+      })
+      .catch(function(err){
+        Message.error("数据上传失败，请重试"),
+        console.log(err);
+      });
+    },
+
+    thePatch(type){
+      this.form.starttime = this.fixDate(this.form.starttime),
+      this.form.endtime = this.fixDate(this.form.endtime),
+      axios({
+          method: 'patch',
+          url: '/user/' + localStorage.uid + '/' + type,
+          data: this.form,
+          transformRequest: [function (data) {
+            var ret = JSON.stringify(data);
+            return ret
+          }],
+          headers:{"Content-Type": "application/json",
+          token: this.$store.state.user.token,
+        },
+      })
+      .then(function(res){
+        console.log(res);
+      })
+      .catch(function(err){
+        Message.error("数据上传失败，请重试"),
+        console.log(err);
+      });
+    },
+
+    theDel(type){
+      this.i.id = this.form.id;
+      axios({
+          method: 'delete',
+          url: '/user/' + localStorage.uid + '/' + type,
+          data: this.i,
+          transformRequest: [function (data) {
+            var ret = JSON.stringify(data);
+            return ret
+          }],
+          headers:{"Content-Type": "application/json",
+          token: this.$store.state.user.token,
+        },
+      })
+      .then(function(res){
+        console.log(res);
+      })
+      .catch(function(err){
+        Message.error("数据上传失败，请重试"),
+        console.log(err);
+      });
+    },
+
+    fixDate(date){
+      if (typeof(date) != 'string' && date != undefined) {
+        date.setDate(date.getDate()+1);
+        date = date.toJSON().slice(0, 7).split( "-" ).join( "." );
+        return date
+      }else {
+        return date
+      }
+    },
   },
   computed:{
   },
