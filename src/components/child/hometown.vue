@@ -9,7 +9,6 @@
     <el-select
       class="home-select"
       v-model="theValue"
-      filterable
       :placeholder="placeholder"
       @visible-change="sethome">
         <el-option

@@ -4,7 +4,7 @@ import router from './router'
 
 // axios 配置
 axios.defaults.timeout = 5000;
-axios.defaults.baseURL = 'http://localhost:9999/api';
+axios.defaults.baseURL = 'http://47.93.224.150:9999/api';
 
 // http request 拦截器
 axios.interceptors.request.use(

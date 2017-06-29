@@ -1,15 +1,15 @@
 <template lang="html">
-  <div id="login">
+  <div id="login" style="height: 100%" ref="fixview">
     <img class="logo" src="../assets/login/loginlogo.png">
     <el-input
       autofocus
-      id="id-input"
+      class="id-input"
       v-model.lazy="input.userid"
       :maxlength="12"
       placeholder="请输入学号">
     </el-input>
     <el-input
-      id="password-input"
+      class="password-input"
       type="password"
       v-model.lazy="input.pass"
       :maxlength="18"
@@ -42,6 +42,13 @@ export default {
         pass: ''
       },
     }
+  },
+
+  mounted() {
+    let screenWidth = document.body.clientHeight;
+    console.log(screenWidth);
+    this.$refs.fixview.style.height = screenWidth + 'px',
+    console.log(this.$refs.fixview.style.cssText);
   },
 
   methods: {
@@ -123,7 +130,6 @@ export default {
 #login
   position: absolute
   background: center url('../assets/login/loginbg.png')
-  height: 100%
   width: 100%
   overflow: hidden
   background-size: cover
@@ -139,14 +145,14 @@ export default {
 .title
   text-align: center
 
-#id-input
+.id-input
   display: block
   width: pxTorem(314)
   margin-top: pxTorem(48)
   margin-left: pxTorem(-157)
   left: 50%
 
-#password-input
+.password-input
   display: block
   width: pxTorem(314)
   margin-left: pxTorem(-157)

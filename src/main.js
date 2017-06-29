@@ -18,6 +18,7 @@ Vue.config.productionTip = false
 axios.defaults.withCredentials=true;
 axios.defaults.baseURL = '/api';
 
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -9,6 +9,7 @@
       label="获奖时间">
       <el-date-picker
         type="month"
+        :editable='false'
         format="yyyy.MM"
         placeholder="时间"
         v-model="form.time"

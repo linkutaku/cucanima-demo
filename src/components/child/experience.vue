@@ -10,6 +10,7 @@
     <el-col :span="11">
       <el-date-picker
         type="month"
+        :editable='false'
         format="yyyy.MM"
         placeholder="开始"
         v-model="form.starttime"
@@ -21,6 +22,7 @@
     <el-col :span="11">
       <el-date-picker
         type="month"
+        :editable='false'
         format="yyyy.MM"
         placeholder="结束"
         v-model="form.endtime"
